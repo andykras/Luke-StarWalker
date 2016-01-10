@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 
 namespace Game
 {
   class MainClass
   {
     public static void Main(string[] args)
-		{
-      Console.WriteLine("Hello World!");
-		}
+    {
+      X11.MyClass.Hello();
+    }
   }
 }
