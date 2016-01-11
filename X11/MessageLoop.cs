@@ -48,9 +48,8 @@ namespace X11
                            | EventMask.VisibilityChangeMask
       );
       FromDLL.XMapWindow(display, window);
-      var e = new XEvent();
-      while (!stop) {
-        FromDLL.XNextEvent(display, ref e);
+      var e = new XEvent { type = XEventName.None };
+      do {
         switch (e.type) {
           case XEventName.ConfigureNotify:
             OnConfigure();
@@ -94,7 +93,8 @@ namespace X11
             Stop();
             break;
         }
-      }
+        FromDLL.XNextEvent(display, ref e);
+      } while (!stop);
       FromDLL.XCloseDisplay(display);
     }
 

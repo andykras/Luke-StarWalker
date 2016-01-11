@@ -30,6 +30,7 @@ namespace Util
     public void Stop()
     {
       stop = true;
+      Clear();
     }
 
     public void Add(IKeyboardListener listener)
@@ -50,6 +51,13 @@ namespace Util
     {
       simple.Enter();
       foreach (var listener in subscribers) listener.Update(key);
+      simple.Exit();
+    }
+
+    private void Clear()
+    {
+      simple.Enter();
+      subscribers.Clear();
       simple.Exit();
     }
   }

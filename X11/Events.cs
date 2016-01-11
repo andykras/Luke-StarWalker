@@ -162,6 +162,7 @@ namespace X11
 
   public enum XEventName
   {
+    None = 0,
     KeyPress = 2,
     KeyRelease = 3,
     ButtonPress = 4,
