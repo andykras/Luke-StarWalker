@@ -8,6 +8,8 @@
     <RootNamespace>X11</RootNamespace>
     <AssemblyName>X11</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,8 +33,12 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MessageLoop.cs" />
+    <Compile Include="Key.cs" />
+    <Compile Include="Modifier.cs" />
+    <Compile Include="Events.cs" />
+    <Compile Include="FromDLL.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
