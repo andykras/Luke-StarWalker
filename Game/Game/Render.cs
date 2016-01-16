@@ -13,7 +13,7 @@ namespace Game
     bool stopped;
 
     void Render()
-  {
+    {
       ConsoleScreen.SetDotAsSeparator();
       new Thread(delegate()
       {
@@ -80,11 +80,11 @@ namespace Game
       }){ IsBackground = true }.Start();
 
       while (!stopped) {
-        renderScene.WaitOne();
-        Thread.Sleep(timer2);
-        Draw();
         renderScene.Reset();
+        Draw();
+        Thread.Sleep(timer2);
+        renderScene.WaitOne();
       }
-  }
+    }
   }
 }

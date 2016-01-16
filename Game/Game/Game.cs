@@ -66,6 +66,7 @@ namespace Game
       renderScene.Set();
       isStopped.WaitOne();
       stopped = true;
+      renderScene.Set();
       X11.MessageLoop.Get.OnKeyPress -= KeyPress;
       X11.MessageLoop.Get.OnKeyRelease -= KeyRelease;
       X11.MessageLoop.Get.OnConfigure -= Invalidate;

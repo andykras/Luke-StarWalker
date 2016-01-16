@@ -8,7 +8,7 @@ namespace X11
     public event Action OnConfigure=delegate{};
     public event Action<Key> OnKeyPress=delegate{};
     public event Action<Key> OnKeyRelease=delegate{};
-    public event Action OnWindowClosed=delegate{};
+    public event Action OnClientMessage=delegate{};
     public event Action<int> OnProperty=delegate{};
     public event Action OnVisibility=delegate{};
     public event Action OnExpose=delegate{};
@@ -28,11 +28,13 @@ namespace X11
       new Thread(Loop){ IsBackground = true }.Start();
     }
 
+    IntPtr display;
+    IntPtr window;
     private void Loop()
     {
-      IntPtr display = FromDLL.XOpenDisplay(null);
+      display = FromDLL.XOpenDisplay(null);
       if (display == IntPtr.Zero) return;
-      IntPtr window = IntPtr.Zero;
+      window = IntPtr.Zero;
       int res = 0;
       FromDLL.XGetInputFocus(display, ref window, ref res);
       if (window == IntPtr.Zero) return;
@@ -109,8 +111,7 @@ namespace X11
             OnVisibility();
             break;
           case XEventName.ClientMessage:
-            OnWindowClosed();
-            Stop();
+            OnClientMessage();
             break;
         }
         FromDLL.XNextEvent(display, ref e);
@@ -121,6 +122,15 @@ namespace X11
     public void Stop()
     {
       stop = true;
+
+      // FakeNotify to stop
+      if (display != IntPtr.Zero && window != IntPtr.Zero) {
+        var e = new XEvent();
+        e.PropertyEvent.type = XEventName.PropertyNotify;
+        e.PropertyEvent.display = display;
+        e.PropertyEvent.window = window;
+        FromDLL.XSendEvent(display, window, true, EventMask.PropertyChangeMask, ref e);
+      }
     }
   }
 }
