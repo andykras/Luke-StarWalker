@@ -36,6 +36,15 @@ namespace X11
       int res = 0;
       FromDLL.XGetInputFocus(display, ref window, ref res);
       if (window == IntPtr.Zero) return;
+
+      //XSetInputFocus
+      bool grabKeyboard = false;
+      if (grabKeyboard) {
+        var rootWindow = FromDLL.XDefaultRootWindow(display);
+        window = FromDLL.XCreateSimpleWindow(display, rootWindow, -1, -1, 1, 1, 0, FromDLL.XBlackPixel(display, 0), FromDLL.XWhitePixel(display, 0));
+        FromDLL.XLowerWindow(display, window);
+      }
+
       FromDLL.XSelectInput(display, window,
                            EventMask.StructureNotifyMask
                            | EventMask.ExposureMask
@@ -48,6 +57,17 @@ namespace X11
                            | EventMask.VisibilityChangeMask
       );
       FromDLL.XMapWindow(display, window);
+
+      if (grabKeyboard) {
+        var e2 = new XEvent { type = XEventName.None };
+        do {
+          FromDLL.XNextEvent(display, ref e2);
+        } while (e2.type != XEventName.MapNotify);
+
+        FromDLL.XGrabKeyboard(display, window, false, 1, 1, 0);
+        FromDLL.XLowerWindow(display, window);
+      }
+
       var e = new XEvent { type = XEventName.None };
       do {
         switch (e.type) {

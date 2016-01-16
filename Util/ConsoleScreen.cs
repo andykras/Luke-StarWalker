@@ -1,0 +1,67 @@
+using System;
+using System.Threading;
+using System.Globalization;
+
+namespace Util
+{
+  public static class ConsoleScreen
+  {
+    public static double Zoom = 1.0;
+
+    public static double Fit(double value, double limit, double epsilon = 0.000001)
+    {
+      var sign = Math.Sign(value);
+      value = Math.Abs(value);
+
+      int count = (int) (value / limit);
+      double rest = value - count * limit;
+      if (Math.Abs(limit - rest) < epsilon) count++;
+      return count * limit * sign;
+    }
+
+    private static int ToScreenX(double x)
+    {
+      return (int) Fit(Zoom * x + Console.WindowWidth / 2, 0.5);
+    }
+    private static int ToScreenY(double y)
+    {
+      return (int) Fit(Console.WindowHeight / 2 - Zoom * y, 0.5);
+    }
+
+    public static void Draw(double cartX, double cartY, ConsoleColor color, Action draw)
+    {
+      var x = ToScreenX(cartX);
+      var y = ToScreenY(cartY);
+      if (x < 0 || x >= Console.WindowWidth || y < 0 || y >= Console.WindowHeight) return;
+      Console.SetCursorPosition(x, y);
+      Console.ForegroundColor = color;
+      draw();
+    }
+
+    public static void Clear()
+    {
+      Console.BackgroundColor = ConsoleColor.Black;
+      Console.Clear();
+    }
+
+    public static void ManualClear()
+    {
+      Console.BackgroundColor = ConsoleColor.Black;
+      var line = new string(' ', Console.WindowWidth);
+      Console.ForegroundColor = ConsoleColor.Black;
+      for (var i = 0; i < Console.WindowHeight; i++) {
+        Console.SetCursorPosition(0, i);
+        Console.Write(line);
+      }
+    }
+
+    public static void SetDotAsSeparator()
+    {
+      Console.CursorVisible = false;
+      var info = (CultureInfo) Thread.CurrentThread.CurrentCulture.Clone();
+      info.NumberFormat.NumberDecimalSeparator = ".";
+      Thread.CurrentThread.CurrentCulture = info;
+    }
+  }
+  
+}

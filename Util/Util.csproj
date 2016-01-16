@@ -37,6 +37,8 @@
     <Compile Include="KeyboardListener.cs" />
     <Compile Include="SimpleLock.cs" />
     <Compile Include="ConsoleKeyboard.cs" />
+    <Compile Include="Rnd.cs" />
+    <Compile Include="ConsoleScreen.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

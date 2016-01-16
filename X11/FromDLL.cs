@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Runtime.InteropServices;
 
 namespace X11
@@ -52,7 +51,16 @@ namespace X11
     extern public static IntPtr XCreateSimpleWindow(IntPtr x11display, IntPtr x11window, int x, int y, uint width, uint height, uint outsideBorderWidth, ulong border, ulong background);
 
     [DllImport("libX11")]
+    extern public static void XLowerWindow(IntPtr x11display, IntPtr x11window);
+
+    [DllImport("libX11")]
+    extern public static int XGrabKeyboard(IntPtr display, IntPtr window, bool owner, int pointer_mode, int keyboard_mode, long time);
+
+    [DllImport("libX11")]
     extern public static IntPtr XRootWindow(IntPtr x11display, int screenNumber);
+
+    [DllImport("libX11")]
+    extern public static IntPtr XDefaultRootWindow(IntPtr x11display);
 
     [DllImport("libX11")]
     extern public static ulong XBlackPixel(IntPtr x11display, int screenNumber);
@@ -83,5 +91,8 @@ namespace X11
 
     [DllImport("libX11")]
     public static extern int XLookupKeysym(ref XKeyEvent keyEvent, int index);
+
+    [DllImport("libX11")]
+    public static extern int  XSendEvent(IntPtr display, IntPtr w, bool propagate, EventMask mask, ref XEvent e);
   }
 }
