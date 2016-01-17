@@ -35,6 +35,10 @@ namespace Game
       pixelList.Add(new CharSprite(ASCII.Kras, xc + 202, yc + 3, 0, ConsoleColor.DarkRed){ ShowLabel = show_label });
       pixelList.Last().Draw(painter);
 
+      // C# is CooL
+      pixelList.Add(new CharSprite(ASCII.Sharp, xc, yc - 33, 0, ConsoleColor.DarkBlue){ ShowLabel = show_label });
+      pixelList.Last().Draw(painter);
+
       // Skull
       var ang = Math.PI / 512;
       for (var i = 0; i < 10; i++) {
@@ -108,7 +112,7 @@ namespace Game
       if (show_stat) {
         ConsoleScreen.Print(string.Format("Zoom: {0:F2} angle: {1} stars: {2} C=[{3:F2}:{4:F2}]", ConsoleScreen.Zoom, (int) (angle / Math.PI * 180), asteriks_count, xc, yc), 3);
         ConsoleScreen.Print(string.Format("d1={0:F2} d2={1:F2} t1={2} t2={3} t3={4}", d1, d2, timer1, timer2, timer3), 2);
-        ConsoleScreen.Print(string.Format("Total pixels: {0}, Total sprites: {1}", counter.TotalCharPixels, counter.TotalCharSprites + counter.TotalSprites), 1);
+        ConsoleScreen.Print(string.Format("Total pixels: {0}, Total sprites: {1}, User Input: {2}", counter.TotalCharPixels, counter.TotalCharSprites + counter.TotalSprites, gameEvent), 1);
       }
       if (show_help) {
         var text = new [] {
@@ -134,7 +138,6 @@ namespace Game
         };
         ConsoleScreen.Print(text, true);
       }
-
       if (show_task) {
         Console.ForegroundColor = ConsoleColor.Yellow;
         var task = "Find the Center (@) of the Universe";

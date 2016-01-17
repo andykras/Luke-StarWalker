@@ -109,15 +109,15 @@ namespace Game
           break;
         case X11.Key.bracketleft:
           if (enable) {
-            timer1 -= 1;
+            //timer1 -= 1;
             timer2 -= 1;
-            timer1 = Math.Max(timer1, 1);
+            //timer1 = Math.Max(timer1, 1);
             timer2 = Math.Max(timer2, 1);
           }
           break;
         case X11.Key.bracketright:
           if (enable) {
-            timer1 += 1;
+            //timer1 += 1;
             timer2 += 1;
           }
           break;

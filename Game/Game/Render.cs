@@ -15,16 +15,20 @@ namespace Game
     void Render()
     {
       ConsoleScreen.SetDotAsSeparator();
-      new Thread(delegate()
+
+      // continious events thread
+      new Thread(() =>
       {
-        while (true) {
+        while (!stopped) {
           skull_index++;
           angle += deg * 0.05;
           renderScene.Set();
           Thread.Sleep(timer3);
         }
       }){ IsBackground = true }.Start();
-      new Thread(delegate()
+
+      // user input events handler
+      new Thread(() =>
       {
         while (!stopped) {
           processEvent.WaitOne();
@@ -56,24 +60,18 @@ namespace Game
             offsetX += (speedUp ? d2 : d1) * Math.Cos(-angle_ship);
             offsetY += (speedUp ? d2 : d1) * Math.Sin(-angle_ship);
           }
-
           if (isSetEvent(GameEvent.Reset)) ResetToDefault();
-
           if (isSetEvent(GameEvent.MoveSceneUp)) yc -= speedUp ? d2 : d1;
           if (isSetEvent(GameEvent.MoveSceneDown)) yc += speedUp ? d2 : d1;
           if (isSetEvent(GameEvent.MoveSceneLeft)) xc += speedUp ? d2 : d1;
           if (isSetEvent(GameEvent.MoveSceneRight)) xc -= speedUp ? d2 : d1;
-
           if (isSetEvent(GameEvent.AddStar)) asteriks_count += speedUp ? 10 : 1;
-
           if (isSetEvent(GameEvent.RotateSceneLeft)) angle -= speedUp ? deg : deg * 0.1;
           if (isSetEvent(GameEvent.RotateSceneRight)) angle += speedUp ? deg : deg * 0.1;
-
           if (isSetEvent(GameEvent.ShipTurnLeft)) angle_ship -= speedUp ? deg : deg * 0.5;
           if (isSetEvent(GameEvent.ShipTurnRight)) angle_ship += speedUp ? deg : deg * 0.5;
           if (isSetEvent(GameEvent.ZoomIn)) ConsoleScreen.Zoom += speedUp ? 0.05 : 0.007;
           if (isSetEvent(GameEvent.ZoomOut)) ConsoleScreen.Zoom -= speedUp ? 0.05 : 0.007;
-
           if (isSetEvent(GameEvent.DeltaDec)) {
             d1 -= 0.05;
             d2 = d1 * ratioD;
@@ -82,19 +80,19 @@ namespace Game
             d1 += 0.05;
             d2 = d1 * ratioD;
           }
-
           UpdateMinMax();
           renderScene.Set();
-          Thread.Sleep(timer1);
           if (gameEvent == GameEvent.None) processEvent.Reset();
+          Thread.Sleep(timer1);
         }
       }){ IsBackground = true }.Start();
 
+      // main Draw cycle
       while (!stopped) {
+        renderScene.WaitOne();
         renderScene.Reset();
         Draw();
         Thread.Sleep(timer2);
-        renderScene.WaitOne();
       }
     }
   }
