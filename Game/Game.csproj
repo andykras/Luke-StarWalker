@@ -52,6 +52,8 @@
     <Compile Include="Game\KeyToEvent.cs" />
     <Compile Include="Game\Game.cs" />
     <Compile Include="Game\GameEvent.cs" />
+    <Compile Include="Visitor\PixelCounter.cs" />
+    <Compile Include="Game\ASCII.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using Util;
+using System;
 
 namespace Game
 {
@@ -64,8 +65,27 @@ namespace Game
         case X11.Key.c:
           if (enable) show_circle = !show_circle;
           break;
+        case X11.Key.Key_1:
+          ship_color = (ConsoleColor) (1 + 8);
+          break;
+        case X11.Key.Key_2:
+          ship_color = (ConsoleColor) (2 + 8);
+          break;
+        case X11.Key.Key_3:
+          ship_color = (ConsoleColor) (3 + 8);
+          break;
         case X11.Key.Key_4:
           if (enable && isSetEvent(GameEvent.ShiftPressed)) show_dollar = !show_dollar;
+          if (!isSetEvent(GameEvent.ShiftPressed)) ship_color = (ConsoleColor) (4 + 8);
+          break;
+        case X11.Key.Key_5:
+          ship_color = (ConsoleColor) (5 + 8);
+          break;
+        case X11.Key.Key_6:
+          ship_color = (ConsoleColor) (6 + 8);
+          break;
+        case X11.Key.Key_7:
+          ship_color = (ConsoleColor) (7 + 8);
           break;
         case X11.Key.Insert:
           if (enable) count++;
@@ -91,6 +111,8 @@ namespace Game
           if (enable) {
             timer1 -= 1;
             timer2 -= 1;
+            timer1 = Math.Max(timer1, 1);
+            timer2 = Math.Max(timer2, 1);
           }
           break;
         case X11.Key.bracketright:
@@ -98,6 +120,15 @@ namespace Game
             timer1 += 1;
             timer2 += 1;
           }
+          break;
+        case X11.Key.semicolon:
+          if (enable) {
+            timer3 -= 10;
+            timer3 = Math.Max(timer3, 30);
+          }
+          break;
+        case X11.Key.apostrophe:
+          if (enable) timer3 += 10;
           break;
         case X11.Key.KP_Enter:
           ConsoleScreen.Zoom = 1.0;
@@ -111,6 +142,9 @@ namespace Game
           break;
         case X11.Key.Shift_L:
           SetEvent(GameEvent.ShiftPressed, enable);
+          break;
+        case X11.Key.h:
+          if (enable) show_help = !show_help;
           break;
         default:
           return false;

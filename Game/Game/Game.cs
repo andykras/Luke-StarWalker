@@ -12,9 +12,11 @@ namespace Game
     Random rnd;
     const int asteriks_count_max = 5000;
     double[] random_numbers;
-    int count, asteriks_count, timer1 = 16, timer2 = 16;
+    int count, asteriks_count, timer1 = 16, timer2 = 16, timer3 = 666;
     double xc, yc, angle, angle_ship, offsetX, offsetY, deg = Math.PI / 24, R = 13, d1, d2, ratioD;
-    bool show_intel, show_label, show_circle, show_dollar;
+    bool show_intel, show_label, show_circle, show_dollar, show_help;
+    ConsoleColor ship_color;
+    int skull_index;
 
     public Game()
     {
@@ -41,7 +43,6 @@ namespace Game
       new Thread(Render){ IsBackground = true }.Start();
     }
 
-
     void ResetToDefault()
     {
       count = 30;
@@ -55,10 +56,25 @@ namespace Game
       show_label = true;
       show_circle = true;
       show_dollar = true;
+      show_help = true;
       asteriks_count = 0;
       ConsoleScreen.Zoom = 1.0;
       d1 = 0.5;
       d2 = 2;
+      ship_color = ConsoleColor.Magenta;
+      skull_index = -270;
+    }
+
+    void UpdateMinMax() {
+      ConsoleScreen.Zoom = Math.Max(ConsoleScreen.Zoom, 0.1);
+      ConsoleScreen.Zoom = Math.Min(ConsoleScreen.Zoom, 100);
+      asteriks_count = Math.Min(asteriks_count, asteriks_count_max / 2);
+      count = Math.Max(count, 1);
+      count = Math.Min(count, 100);
+      d1 = Math.Max(d1, 0);
+      d1 = Math.Min(d1, 10);
+      d2 = Math.Max(d2, 0);
+      d2 = Math.Min(d2, d1 * ratioD);
     }
 
     public void Run()

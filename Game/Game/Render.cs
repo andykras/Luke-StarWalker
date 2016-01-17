@@ -17,6 +17,14 @@ namespace Game
       ConsoleScreen.SetDotAsSeparator();
       new Thread(delegate()
       {
+        while (true) {
+          skull_index++;
+          renderScene.Set();
+          Thread.Sleep(timer3);
+        }
+      }){ IsBackground = true }.Start();
+      new Thread(delegate()
+      {
         while (!stopped) {
           processEvent.WaitOne();
           var speedUp = isSetEvent(GameEvent.SpeedUp);
@@ -73,6 +81,7 @@ namespace Game
             d2 = d1 * ratioD;
           }
 
+          UpdateMinMax();
           renderScene.Set();
           Thread.Sleep(timer1);
           if (gameEvent == GameEvent.None) processEvent.Reset();

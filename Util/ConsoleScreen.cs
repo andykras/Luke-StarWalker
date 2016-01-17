@@ -38,6 +38,18 @@ namespace Util
       draw();
     }
 
+    public static void Print(string[] text, bool alignRight = false)
+    {
+      var y = text.Length;
+      foreach (var line in text) Print(line, y--, alignRight);
+    }
+
+    public static void Print(string text, int y, bool alignRight = false)
+    {
+      Console.SetCursorPosition(alignRight ? Console.WindowWidth - text.Length : 0, Console.WindowHeight - y);
+      Console.Write(text);
+    }
+
     public static void Clear()
     {
       Console.BackgroundColor = ConsoleColor.Black;
