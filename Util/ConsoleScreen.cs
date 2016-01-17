@@ -59,10 +59,10 @@ namespace Util
       Console.Clear();
     }
 
-    public static void ManualClear()
+    public static void Fill(char symbol = ' ')
     {
       Console.BackgroundColor = ConsoleColor.Black;
-      var line = new string(' ', Console.WindowWidth);
+      var line = new string(symbol, Console.WindowWidth);
       Console.ForegroundColor = ConsoleColor.Black;
       for (var i = 0; i < Console.WindowHeight; i++) {
         Console.SetCursorPosition(0, i);

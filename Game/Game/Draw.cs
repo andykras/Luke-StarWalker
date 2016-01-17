@@ -29,6 +29,12 @@ namespace Game
       pixelList.Add(new CharPixel('@', xc, yc, ConsoleColor.Yellow));
       pixelList.Last().Draw(pixel_painter);
 
+      // andy kras
+      pixelList.Add(new CharSprite(ASCII.Andy, xc + 152, yc + 23, 0, ConsoleColor.DarkRed){ ShowLabel = show_label });
+      pixelList.Last().Draw(painter);
+      pixelList.Add(new CharSprite(ASCII.Kras, xc + 202, yc + 3, 0, ConsoleColor.DarkRed){ ShowLabel = show_label });
+      pixelList.Last().Draw(painter);
+
       // Skull
       var ang = Math.PI / 512;
       for (var i = 0; i < 10; i++) {
@@ -108,9 +114,9 @@ namespace Game
         var text = new [] {
           "H - Toggle HELP",
           "E,S,D,F - Ship Movement",
+          "1-8 - Change Ship Color",
           "-----------------------", " ", " ",
           "L - Show/Hide sprite Labels",
-          "1-8 - Change Ship Color",
           "Num* (KP_Multiply) - Add 1 Star (Alt+* - Add 10 Stars)",
           "Num +/-, Num_Enter (KP_Enter) - Zoom, Reset Zoom",
           "Num/ (KP_Device) - Reset all to Defaults",
