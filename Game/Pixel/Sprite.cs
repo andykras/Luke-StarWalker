@@ -14,13 +14,19 @@ namespace Game
     public ConsoleColor Color { get; }
     public double Angle { get; protected set; }
 
-    protected int width;
-    protected int height;
+    private int width;
+    private int height;
     public virtual int Width { get { return width; } }
     public virtual int Height { get { return height; } }
 
-    private double xmin = 1e6, xmax = -1e6, ymin = 1e6, ymax = -1e6;
     public void Add(IPixel pixel, bool show = true)
+    {
+      CalculateBounds(pixel);
+      if (show) pixels.Add(pixel);
+    }
+
+    private double xmin = 1e6, xmax = -1e6, ymin = 1e6, ymax = -1e6;
+    void CalculateBounds(IPixel pixel)
     {
       xmin = Math.Min(xmin, pixel.X);
       xmax = Math.Max(xmax, pixel.X + pixel.Width);
@@ -28,7 +34,6 @@ namespace Game
       ymax = Math.Max(ymax, pixel.Y);
       width = (int) (xmax - xmin);
       height = (int) (ymax - ymin);
-      if (show) pixels.Add(pixel);
     }
 
     public Sprite(List<IPixel> pixels = null, double angle = 0, ConsoleColor color = ConsoleColor.White)
@@ -62,7 +67,7 @@ namespace Game
       painter.Draw(this);
     }
 
-    public bool ShowLabel = true;
+    public virtual bool ShowLabel { get; set; } = true;
     public override string ToString()
     {
       return ShowLabel ? string.Format("[Sprite: {0}° {1}:{2} ({3:F2},{4:F2})]", (int) Math.Round(Angle / Math.PI * 180), Width, Height, X, Y) : null;

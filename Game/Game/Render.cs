@@ -19,6 +19,7 @@ namespace Game
       {
         while (true) {
           skull_index++;
+          angle += deg * 0.05;
           renderScene.Set();
           Thread.Sleep(timer3);
         }
@@ -27,6 +28,7 @@ namespace Game
       {
         while (!stopped) {
           processEvent.WaitOne();
+          show_task = false;
           var speedUp = isSetEvent(GameEvent.SpeedUp);
           if (isSetEvent(GameEvent.ShipForward)) {
             var rx = (speedUp ? d2 : d1) * Math.Sin(angle_ship);
@@ -69,8 +71,8 @@ namespace Game
 
           if (isSetEvent(GameEvent.ShipTurnLeft)) angle_ship -= speedUp ? deg : deg * 0.5;
           if (isSetEvent(GameEvent.ShipTurnRight)) angle_ship += speedUp ? deg : deg * 0.5;
-          if (isSetEvent(GameEvent.ZoomIn)) ConsoleScreen.Zoom += speedUp ? 0.1 : 0.03;
-          if (isSetEvent(GameEvent.ZoomOut)) ConsoleScreen.Zoom -= speedUp ? 0.1 : 0.03;
+          if (isSetEvent(GameEvent.ZoomIn)) ConsoleScreen.Zoom += speedUp ? 0.05 : 0.007;
+          if (isSetEvent(GameEvent.ZoomOut)) ConsoleScreen.Zoom -= speedUp ? 0.05 : 0.007;
 
           if (isSetEvent(GameEvent.DeltaDec)) {
             d1 -= 0.05;

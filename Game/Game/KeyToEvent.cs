@@ -143,6 +143,9 @@ namespace Game
         case X11.Key.Shift_L:
           SetEvent(GameEvent.ShiftPressed, enable);
           break;
+        case X11.Key.F1:
+          if (enable) show_stat = !show_stat;
+          break;
         case X11.Key.h:
           if (enable) show_help = !show_help;
           break;

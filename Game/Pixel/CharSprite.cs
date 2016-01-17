@@ -28,7 +28,6 @@ namespace Game
       visitor.Visit(this);
     }
 
-    public new bool ShowLabel = true;
     public override string ToString()
     {
       return ShowLabel ? string.Format("[CharSprite: {0}° {1}:{2} ({3:F2},{4:F2})]", (int) Math.Round(Angle / Math.PI * 180), Width, Height, X, Y) : null;

@@ -46,7 +46,10 @@ namespace Util
 
     public static void Print(string text, int y, bool alignRight = false)
     {
-      Console.SetCursorPosition(alignRight ? Console.WindowWidth - text.Length : 0, Console.WindowHeight - y);
+      var x = alignRight ? Console.WindowWidth - text.Length : 0;
+      y = Console.WindowHeight - y;
+      if (x < 0 || x >= Console.WindowWidth || y < 0 || y >= Console.WindowHeight) return;
+      Console.SetCursorPosition(x, y);
       Console.Write(text);
     }
 

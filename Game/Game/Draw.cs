@@ -62,7 +62,7 @@ namespace Game
         }
 
         if (show_dollar) {
-          var dollars = new CharSprite(ASCII.Dollar, xc - 65, yc + 15, angle, ConsoleColor.DarkBlue){ ShowLabel = show_label };
+          var dollars = new CharSprite(ASCII.Dollar, xc - 135, yc + 15, angle, ConsoleColor.DarkBlue){ ShowLabel = show_label };
           dollars.Draw(painter);
           pixelList.Add(dollars);
         }
@@ -99,16 +99,18 @@ namespace Game
       pixelList.ForEach(p => p.Accept(counter));
 
       Console.ForegroundColor = ConsoleColor.Red;
-      ConsoleScreen.Print(string.Format("Zoom: {0:F2} angle: {1} stars: {2} C=[{3:F2}:{4:F2}]", ConsoleScreen.Zoom, (int) (angle / Math.PI * 180), asteriks_count, xc, yc), 3);
-      ConsoleScreen.Print(string.Format("d1={0:F2} d2={1:F2} t1={2} t2={3} t3={4}", d1, d2, timer1, timer2, timer3), 2);
-      ConsoleScreen.Print(string.Format("Total pixels: {0}, Total sprites: {1}", counter.TotalCharPixels, counter.TotalCharSprites + counter.TotalSprites), 1);
-
+      if (show_stat) {
+        ConsoleScreen.Print(string.Format("Zoom: {0:F2} angle: {1} stars: {2} C=[{3:F2}:{4:F2}]", ConsoleScreen.Zoom, (int) (angle / Math.PI * 180), asteriks_count, xc, yc), 3);
+        ConsoleScreen.Print(string.Format("d1={0:F2} d2={1:F2} t1={2} t2={3} t3={4}", d1, d2, timer1, timer2, timer3), 2);
+        ConsoleScreen.Print(string.Format("Total pixels: {0}, Total sprites: {1}", counter.TotalCharPixels, counter.TotalCharSprites + counter.TotalSprites), 1);
+      }
       if (show_help) {
         var text = new [] {
           "H - Toggle HELP",
+          "E,S,D,F - Ship Movement",
+          "-----------------------", " ", " ",
           "L - Show/Hide sprite Labels",
           "1-8 - Change Ship Color",
-          "E,S,D,F - Ship Movement",
           "Num* (KP_Multiply) - Add 1 Star (Alt+* - Add 10 Stars)",
           "Num +/-, Num_Enter (KP_Enter) - Zoom, Reset Zoom",
           "Num/ (KP_Device) - Reset all to Defaults",
@@ -122,8 +124,17 @@ namespace Game
           "o,p,[,] - Timers",
           "Enter - Change Painters",
           "I - Show/Hide Intel Logo",
+          "F1 - Toggle Stat",
         };
         ConsoleScreen.Print(text, true);
+      }
+
+      if (show_task) {
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        var task = "Find the Center (@) of the Universe";
+        var len = Console.WindowWidth / 2 - task.Length / 2;
+        task = new string(' ', len > 0 ? len : 0) + task;
+        ConsoleScreen.Print(task, Console.WindowHeight / 2);
       }
     }
   }
