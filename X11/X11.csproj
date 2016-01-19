@@ -38,7 +38,7 @@
     <Compile Include="Key.cs" />
     <Compile Include="Modifier.cs" />
     <Compile Include="Events.cs" />
-    <Compile Include="FromDLL.cs" />
+    <Compile Include="X11lib.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

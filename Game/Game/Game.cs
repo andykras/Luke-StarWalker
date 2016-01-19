@@ -18,6 +18,7 @@ namespace Game
     ConsoleColor ship_color;
     int skull_index;
 
+    Thread render;
     public Game()
     {
       ResetToDefault();
@@ -31,16 +32,7 @@ namespace Game
       random_numbers = new double[asteriks_count_max];
       for (var i = 0; i < asteriks_count_max; i++) random_numbers[i] = (rnd.NextGaussian(rnd.Next(-100, 100), 100 / 2));
 
-      X11.MessageLoop.Get.OnKeyPress += KeyPress;
-      X11.MessageLoop.Get.OnKeyRelease += KeyRelease;
-      X11.MessageLoop.Get.OnConfigure += Invalidate;
-      X11.MessageLoop.Get.OnEnterLeave += Invalidate;
-      X11.MessageLoop.Get.OnExpose += Invalidate;
-      X11.MessageLoop.Get.OnFocus += Invalidate;
-      X11.MessageLoop.Get.OnProperty += Invalidate;
-      X11.MessageLoop.Get.OnVisibility += Invalidate;
-
-      new Thread(Render){ IsBackground = true }.Start();
+      render = new Thread(Render){ IsBackground = true };
     }
 
     void ResetToDefault()
@@ -81,29 +73,16 @@ namespace Game
 
     public void Run()
     {
-      renderScene.Set();
+      render.Start();
       isStopped.WaitOne();
+
+      // very rough
+      //render.Abort();
+
+      // more accurate
       stopped = true;
       renderScene.Set();
-      X11.MessageLoop.Get.OnKeyPress -= KeyPress;
-      X11.MessageLoop.Get.OnKeyRelease -= KeyRelease;
-      X11.MessageLoop.Get.OnConfigure -= Invalidate;
-      X11.MessageLoop.Get.OnEnterLeave -= Invalidate;
-      X11.MessageLoop.Get.OnExpose -= Invalidate;
-      X11.MessageLoop.Get.OnFocus -= Invalidate;
-      X11.MessageLoop.Get.OnProperty -= Invalidate;
-      X11.MessageLoop.Get.OnVisibility -= Invalidate;
-    }
-
-    void KeyPress(X11.Key key)
-    {
-      if (KeyToEvent(key, true)) processEvent.Set();
-    }
-
-    void KeyRelease(X11.Key key)
-    {
-      if (key == X11.Key.Escape) Close();
-      KeyToEvent(key, false);
+      render.Join();
     }
 
     bool isSetEvent(GameEvent eventToTest)
@@ -115,26 +94,6 @@ namespace Game
     {
       if (enable) gameEvent = gameEvent | eventToSet;
       else gameEvent = gameEvent ^ eventToSet;
-    }
-
-    void Invalidate()
-    {
-      renderScene.Set();
-    }
-
-    void Invalidate(bool enable)
-    {
-      if (enable) renderScene.Set();
-    }
-
-    void Invalidate(int state)
-    {
-      renderScene.Set();
-    }
-
-    void Close()
-    {
-      isStopped.Set();
     }
   }
 }

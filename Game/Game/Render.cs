@@ -15,7 +15,36 @@ namespace Game
     void Render()
     {
       ConsoleScreen.SetDotAsSeparator();
+      RollerEvents();
+      UserInputThread();
 
+      // main render cycle
+      using (var loop = new X11.MessageLoop()) {
+        loop.OnKeyPress += (key) =>
+        {
+          if (KeyToEvent(key, true)) processEvent.Set();
+        };
+        loop.OnKeyRelease += (key) =>
+        {
+          if (key == X11.Key.Escape) isStopped.Set();
+          else KeyToEvent(key, false);
+        };
+        loop.OnConfigure += () => renderScene.Set();
+        loop.OnEnterLeave += (t) => renderScene.Set();
+        loop.OnExpose += () => renderScene.Set();
+        loop.OnFocus += (t) => renderScene.Set();
+        loop.OnProperty += (t) => renderScene.Set();
+        loop.OnVisibility += () => renderScene.Set();
+        while (!stopped) {
+          renderScene.Reset();
+          Draw();
+          Thread.Sleep(timer2);
+          renderScene.WaitOne();
+        }
+      }
+    }
+
+    void RollerEvents() {
       // continious events thread
       new Thread(() =>
       {
@@ -25,8 +54,12 @@ namespace Game
           renderScene.Set();
           Thread.Sleep(timer3);
         }
-      }){ IsBackground = true }.Start();
+      }) {
+        IsBackground = true
+      }.Start();
+    }
 
+    void UserInputThread() {
       // user input events handler
       new Thread(() =>
       {
@@ -85,15 +118,9 @@ namespace Game
           if (gameEvent == GameEvent.None) processEvent.Reset();
           Thread.Sleep(timer1);
         }
-      }){ IsBackground = true }.Start();
-
-      // main Draw cycle
-      while (!stopped) {
-        renderScene.WaitOne();
-        renderScene.Reset();
-        Draw();
-        Thread.Sleep(timer2);
-      }
+      }) {
+        IsBackground = true
+      }.Start();
     }
   }
 }

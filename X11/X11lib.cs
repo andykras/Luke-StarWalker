@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace X11
 {
-  static class FromDLL
+  static class X11lib
   {
     [DllImport("libX11")]
     extern public static IntPtr XInternAtom(IntPtr x11display, [MarshalAs(UnmanagedType.LPStr)] string atomName, bool onlyIfExists);
@@ -43,6 +43,9 @@ namespace X11
 
     [DllImport("libX11")]
     extern public static void XCloseDisplay(IntPtr x11display);
+
+    [DllImport("libX11")]
+    extern public static  void XDestroyWindow(IntPtr x11display, IntPtr x11window);
 
     [DllImport("libX11")]
     extern public static int XDefaultScreen(IntPtr x11display);

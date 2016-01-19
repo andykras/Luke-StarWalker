@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace X11
 {
-  public class MessageLoop
+  public sealed class MessageLoop : IDisposable
   {
     public event Action OnConfigure=delegate{};
     public event Action<Key> OnKeyPress=delegate{};
@@ -15,59 +15,57 @@ namespace X11
     public event Action<bool> OnFocus=delegate{};
     public event Action<bool> OnEnterLeave=delegate{};
 
-    public static MessageLoop Get { get; }
+    bool stop;
+    IntPtr display;
+    IntPtr window;
 
-    static MessageLoop()
-    {
-      Get = new MessageLoop();
-    }
+    public MessageLoop() : this(IntPtr.Zero) {}
 
-    private bool stop;
-    private MessageLoop()
+    public MessageLoop(IntPtr winPtr)
     {
+      window = winPtr;
       new Thread(Loop){ IsBackground = true }.Start();
     }
 
-    IntPtr display;
-    IntPtr window;
     private void Loop()
     {
-      display = FromDLL.XOpenDisplay(null);
+      display = X11lib.XOpenDisplay(null);
       if (display == IntPtr.Zero) return;
-      window = IntPtr.Zero;
-      int res = 0;
-      FromDLL.XGetInputFocus(display, ref window, ref res);
-      if (window == IntPtr.Zero) return;
-
-      //XSetInputFocus
-      bool grabKeyboard = false;
-      if (grabKeyboard) {
-        var rootWindow = FromDLL.XDefaultRootWindow(display);
-        window = FromDLL.XCreateSimpleWindow(display, rootWindow, -1, -1, 1, 1, 0, FromDLL.XBlackPixel(display, 0), FromDLL.XWhitePixel(display, 0));
-        FromDLL.XLowerWindow(display, window);
+      if (window == IntPtr.Zero) {
+        int res = 0;
+        X11lib.XGetInputFocus(display, ref window, ref res);
+        if (window == IntPtr.Zero) return;
       }
 
-      FromDLL.XSelectInput(display, window,
-                           EventMask.StructureNotifyMask
-                           | EventMask.ExposureMask
-                           | EventMask.KeyPressMask
-                           | EventMask.KeyReleaseMask
-                           | EventMask.EnterWindowMask
-                           | EventMask.LeaveWindowMask
-                           | EventMask.FocusChangeMask
-                           | EventMask.PropertyChangeMask
-                           | EventMask.VisibilityChangeMask
+      // TODO: move grabkeyboard to separate class
+      bool grabKeyboard = false;
+      if (grabKeyboard) {
+        var rootWindow = X11lib.XDefaultRootWindow(display);
+        window = X11lib.XCreateSimpleWindow(display, rootWindow, -1, -1, 1, 1, 0, X11lib.XBlackPixel(display, 0), X11lib.XWhitePixel(display, 0));
+        X11lib.XLowerWindow(display, window);
+      }
+
+      X11lib.XSelectInput(display, window,
+                          EventMask.StructureNotifyMask
+                          | EventMask.ExposureMask
+                          | EventMask.KeyPressMask
+                          | EventMask.KeyReleaseMask
+                          | EventMask.EnterWindowMask
+                          | EventMask.LeaveWindowMask
+                          | EventMask.FocusChangeMask
+                          | EventMask.PropertyChangeMask
+                          | EventMask.VisibilityChangeMask
       );
-      FromDLL.XMapWindow(display, window);
+      X11lib.XMapWindow(display, window);
 
       if (grabKeyboard) {
         var e2 = new XEvent { type = XEventName.None };
         do {
-          FromDLL.XNextEvent(display, ref e2);
+          X11lib.XNextEvent(display, ref e2);
         } while (e2.type != XEventName.MapNotify);
 
-        FromDLL.XGrabKeyboard(display, window, false, 1, 1, 0);
-        FromDLL.XLowerWindow(display, window);
+        X11lib.XGrabKeyboard(display, window, false, 1, 1, 0);
+        X11lib.XLowerWindow(display, window);
       }
 
       var e = new XEvent { type = XEventName.None };
@@ -86,10 +84,10 @@ namespace X11
             break;
           case XEventName.KeyPress:
             //var mod = (Modifier) X.XkbKeysymToModifiers(display, X.XKeycodeToKeysym(display, e.KeyEvent.keycode, 0));
-            OnKeyPress((Key) FromDLL.XKeycodeToKeysym(display, e.KeyEvent.keycode, 0));
+            OnKeyPress((Key) X11lib.XKeycodeToKeysym(display, e.KeyEvent.keycode, 0));
             break;
           case XEventName.KeyRelease:
-            OnKeyRelease((Key) FromDLL.XKeycodeToKeysym(display, e.KeyEvent.keycode, 0));
+            OnKeyRelease((Key) X11lib.XKeycodeToKeysym(display, e.KeyEvent.keycode, 0));
             break;
           case XEventName.EnterNotify:
             OnEnterLeave(true);
@@ -114,23 +112,26 @@ namespace X11
             OnClientMessage();
             break;
         }
-        FromDLL.XNextEvent(display, ref e);
+        X11lib.XNextEvent(display, ref e);
       } while (!stop);
-      FromDLL.XCloseDisplay(display);
+      X11lib.XCloseDisplay(display);
+      display = IntPtr.Zero;
+      window = IntPtr.Zero;
     }
 
-    public void Stop()
+    static void SendFakeEventToStop(IntPtr w)
+    {
+      var d = X11lib.XOpenDisplay(null);
+      if (d == IntPtr.Zero) return;
+      var e = new XEvent{ type = XEventName.PropertyNotify };
+      X11lib.XSendEvent(d, w, true, EventMask.PropertyChangeMask, ref e);
+      X11lib.XCloseDisplay(d);
+    }
+
+    public void Dispose()
     {
       stop = true;
-
-      // FakeNotify to stop
-      if (display != IntPtr.Zero && window != IntPtr.Zero) {
-        var e = new XEvent();
-        e.PropertyEvent.type = XEventName.PropertyNotify;
-        e.PropertyEvent.display = display;
-        e.PropertyEvent.window = window;
-        FromDLL.XSendEvent(display, window, true, EventMask.PropertyChangeMask, ref e);
-      }
+      SendFakeEventToStop(window);
     }
   }
 }
